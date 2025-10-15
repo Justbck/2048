@@ -9,10 +9,10 @@ describe("Board", () => {
     expect(cells.length).toBe(16); // 4x4 grid has 16 cells
   });
 
-   it("should render a board with 2 tiles", () => {
+  it("should render a board with 2 tiles", () => {
     const { container } = render(<Board />);
     const cells = container.querySelectorAll(".tile");
 
     expect(cells.length).toBe(2); // initially 2 tiles are created in useEffect
-   });
+  });
 });
