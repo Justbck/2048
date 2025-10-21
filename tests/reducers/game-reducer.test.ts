@@ -24,7 +24,10 @@ describe("gameReducer", () => {
       const [state] = result.current; // get updated state after act
       expect(state.board[0][0]).toBeDefined(); // check if tile id is placed on the board
       // tiles is an object mapping ids to Tile. Ensure one of the values equals the tile payload
-      expect(Object.values(state.tiles)).toContainEqual({ id: state.board[0][0], ...tile});
+      expect(Object.values(state.tiles)).toContainEqual({
+        id: state.board[0][0],
+        ...tile,
+      });
     });
   });
 
@@ -101,7 +104,7 @@ describe("gameReducer", () => {
       expect(isNil(stateAfter.board[3][0])).toBeTruthy();
     });
 
-     it("should merge tiles with the same value", () => {
+    it("should merge tiles with the same value", () => {
       const tile1: Tile = {
         position: [0, 1],
         value: 2,
@@ -208,6 +211,78 @@ describe("gameReducer", () => {
       expect(isNil(stateAfter.board[2][0])).toBeTruthy();
       expect(typeof stateAfter.board[3][0]).toBe("string");
     });
+
+    it("should merge tiles with the same value", () => {
+      const tile1: Tile = {
+        position: [0, 1],
+        value: 2,
+      };
+
+      const tile2: Tile = {
+        position: [0, 3],
+        value: 2,
+      };
+
+      const { result } = renderHook(() =>
+        useReducer(gameReducer, initialState),
+      );
+      const [, dispatch] = result.current;
+
+      act(() => {
+        dispatch({ type: "create_tile", tile: tile1 });
+        dispatch({ type: "create_tile", tile: tile2 });
+      });
+
+      const [stateBefore] = result.current;
+      expect(isNil(stateBefore.board[0][0])).toBeTruthy();
+      expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+      expect(isNil(stateBefore.board[2][0])).toBeTruthy();
+      expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
+
+      act(() => dispatch({ type: "move_down" }));
+
+      const [stateAfter] = result.current;
+      expect(isNil(stateAfter.board[0][0])).toBeTruthy();
+      expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+      expect(isNil(stateAfter.board[2][0])).toBeTruthy();
+      expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(4);
+    });
+
+    it("should merge tiles with the same value", () => {
+      const tile1: Tile = {
+        position: [0, 1],
+        value: 2,
+      };
+
+      const tile2: Tile = {
+        position: [0, 3],
+        value: 2,
+      };
+
+      const { result } = renderHook(() =>
+        useReducer(gameReducer, initialState),
+      );
+      const [, dispatch] = result.current;
+
+      act(() => {
+        dispatch({ type: "create_tile", tile: tile1 });
+        dispatch({ type: "create_tile", tile: tile2 });
+      });
+
+      const [stateBefore] = result.current;
+      expect(isNil(stateBefore.board[0][0])).toBeTruthy();
+      expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+      expect(isNil(stateBefore.board[2][0])).toBeTruthy();
+      expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
+
+      act(() => dispatch({ type: "move_down" }));
+
+      const [stateAfter] = result.current;
+      expect(isNil(stateAfter.board[0][0])).toBeTruthy();
+      expect(isNil(stateAfter.board[1][0])).toBeTruthy();
+      expect(isNil(stateAfter.board[2][0])).toBeTruthy();
+      expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(4);
+    });
   });
 
   describe("move_left", () => {
@@ -276,6 +351,42 @@ describe("gameReducer", () => {
 
       const [stateAfter] = result.current;
       expect(typeof stateAfter.board[1][0]).toBe("string");
+      expect(isNil(stateAfter.board[1][1])).toBeTruthy();
+      expect(isNil(stateAfter.board[1][2])).toBeTruthy();
+      expect(isNil(stateAfter.board[1][3])).toBeTruthy();
+    });
+
+    it("should move tiles with the same value on top of each other", () => {
+      const tile1: Tile = {
+        position: [0, 1],
+        value: 2,
+      };
+
+      const tile2: Tile = {
+        position: [3, 1],
+        value: 2,
+      };
+
+      const { result } = renderHook(() =>
+        useReducer(gameReducer, initialState),
+      );
+      const [, dispatch] = result.current;
+
+      act(() => {
+        dispatch({ type: "create_tile", tile: tile1 });
+        dispatch({ type: "create_tile", tile: tile2 });
+      });
+
+      const [stateBefore] = result.current;
+      expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+      expect(isNil(stateBefore.board[1][1])).toBeTruthy();
+      expect(isNil(stateBefore.board[1][2])).toBeTruthy();
+      expect(stateBefore.tiles[stateBefore.board[1][3]].value).toBe(2);
+
+      act(() => dispatch({ type: "move_left" }));
+
+      const [stateAfter] = result.current;
+      expect(stateAfter.tiles[stateAfter.board[1][0]].value).toBe(4);
       expect(isNil(stateAfter.board[1][1])).toBeTruthy();
       expect(isNil(stateAfter.board[1][2])).toBeTruthy();
       expect(isNil(stateAfter.board[1][3])).toBeTruthy();

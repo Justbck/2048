@@ -41,7 +41,7 @@ export default function gameReducer(state: State, action: Action) {
         board: newBoard, // update board with new tile
         tiles: {
           ...state.tiles,
-          [tileId]: {id: tileId, ...action.tile}, // add new tile to tiles dictionary
+          [tileId]: { id: tileId, ...action.tile }, // add new tile to tiles dictionary
         },
       };
     }
@@ -60,7 +60,7 @@ export default function gameReducer(state: State, action: Action) {
 
           if (!isNil(tileId)) {
             if (previousTile?.value === currentTile.value) {
-               newTiles[previousTile.id as string] = {
+              newTiles[previousTile.id as string] = {
                 ...previousTile,
                 value: previousTile.value * 2,
               };
@@ -103,10 +103,13 @@ export default function gameReducer(state: State, action: Action) {
 
           if (!isNil(tileId)) {
             if (previousTile?.value === currentTile.value) {
+              newTiles[previousTile.id as string] = {
+                ...previousTile,
+                value: previousTile.value * 2,
+              };
               newTiles[tileId] = {
                 ...currentTile,
                 position: [x, newY + 1],
-                value: currentTile.value * 2,
               };
               previousTile = undefined;
               continue;
@@ -143,6 +146,10 @@ export default function gameReducer(state: State, action: Action) {
 
           if (!isNil(tileId)) {
             if (previousTile?.value === currentTile.value) {
+              newTiles[previousTile.id as string] = {
+                ...previousTile,
+                value: previousTile.value * 2,
+              };
               newTiles[tileId] = {
                 ...currentTile,
                 position: [newX - 1, y],
@@ -179,11 +186,11 @@ export default function gameReducer(state: State, action: Action) {
           const tileId = state.board[y][x];
           const currentTile = state.tiles[tileId];
           if (!isNil(tileId)) {
-            if(previousTile?.value === currentTile.value) {
+            if (previousTile?.value === currentTile.value) {
               newTiles[tileId] = {
                 ...currentTile,
                 position: [newX + 1, y],
-              }
+              };
               previousTile = undefined;
               continue;
             }
