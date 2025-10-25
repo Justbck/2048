@@ -1,14 +1,15 @@
-import { JSX, useEffect, useReducer, useRef } from "react";
+import { JSX, useCallback, useContext, useEffect, useReducer, useRef } from "react";
 import styles from "@/styles/board.module.css";
 import Tile from "./tile";
 import { Tile as TileModel } from "@/models/tile";
-import gameReducer, { initialState } from "@/reducers/game-reducer";
+import { mergeAnimationDuration } from "@/constants/constants";
+import { gameContext } from "@/context/game-contex";
 
 export default function Board() {
-  const [gameState, dispatch] = useReducer(gameReducer, initialState);
+  const { appendRandomTile, getTiles, dispatch } = useContext(gameContext);
   const initialized = useRef(false);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     e.preventDefault();
 
     switch (e.code) {
@@ -27,7 +28,12 @@ export default function Board() {
         dispatch({ type: "move_right" });
         break;
     }
-  };
+
+    setTimeout(() => {
+      dispatch({ type: "clean_up" });
+      appendRandomTile();
+    }, mergeAnimationDuration);
+  }, [appendRandomTile, dispatch]);
 
   const renderGrid = () => {
     const cells: JSX.Element[] = [];
@@ -40,10 +46,10 @@ export default function Board() {
   };
 
   const renderTiles = () => {
-    return Object.values(gameState.tiles).map(
-      (tile: TileModel, index: number) => (
-        <Tile key={`${index}`} {...tile} /> // spreading tile properties as props
-      ),
+    return getTiles().map(
+      (tile: TileModel) => {
+        return <Tile key={`${tile.id}`} {...tile} />;
+      },
     );
   };
 
@@ -54,14 +60,14 @@ export default function Board() {
       dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } });
       initialized.current = true;
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleKeyDown]);
 
   return (
     <div className={styles.board}>
