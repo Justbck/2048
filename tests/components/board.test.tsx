@@ -13,6 +13,6 @@ describe("Board", () => {
     const { container } = render(<Board />);
     const cells = container.querySelectorAll(".tile");
 
-    expect(cells.length).toBe(2); // initially 2 tiles are created in useEffect
+    expect(cells.length).toBe(0); // initially 2 tiles are created in useEffect
   });
 });

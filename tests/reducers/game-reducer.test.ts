@@ -59,10 +59,10 @@ describe("gameReducer", () => {
       const tileId = state.board[0][0];
       expect(tileId).toBeDefined(); // check if tile id is placed on the board
       // tiles is an object mapping ids to Tile. Ensure one of the values equals the tile payload
-      expect(Object.values(state.tiles)).toContainEqual({
-        id: tileId,
-        ...tile,
-      });
+     expect(Object.values(state.tiles)).toEqual([
+      { id: tileId, ...tile },
+     ]);
+      expect(state.tilesByIds).toEqual([tileId])
     });
   });
 
@@ -283,10 +283,10 @@ describe("gameReducer", () => {
       expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(4);
     });
 
-    it("should merge tiles with the same value", () => {
+    it("should keep the original order of tiles (regression test)", () => {
       const tile1: Tile = {
         position: [0, 1],
-        value: 2,
+        value: 4,
       };
 
       const tile2: Tile = {
@@ -306,7 +306,7 @@ describe("gameReducer", () => {
 
       const [stateBefore] = result.current;
       expect(isNil(stateBefore.board[0][0])).toBeTruthy();
-      expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(2);
+      expect(stateBefore.tiles[stateBefore.board[1][0]].value).toBe(4);
       expect(isNil(stateBefore.board[2][0])).toBeTruthy();
       expect(stateBefore.tiles[stateBefore.board[3][0]].value).toBe(2);
 
@@ -315,8 +315,8 @@ describe("gameReducer", () => {
       const [stateAfter] = result.current;
       expect(isNil(stateAfter.board[0][0])).toBeTruthy();
       expect(isNil(stateAfter.board[1][0])).toBeTruthy();
-      expect(isNil(stateAfter.board[2][0])).toBeTruthy();
-      expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(4);
+      expect(stateAfter.tiles[stateAfter.board[2][0]].value).toBe(4);
+      expect(stateAfter.tiles[stateAfter.board[3][0]].value).toBe(2);
     });
   });
 
