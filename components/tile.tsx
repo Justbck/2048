@@ -1,5 +1,6 @@
 import {
-  containerWidth,
+  containerWidthDesktop,
+  containerWidthMobile,
   mergeAnimationDuration,
   tileCountPerDimension,
 } from "@/constants/constants";
@@ -7,8 +8,11 @@ import usePreviousProps from "@/hooks/use-previous-props";
 import { Tile as TileProps } from "@/models/tile";
 import styles from "@/styles/tile.module.css";
 import { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 export default function Tile({ position, value }: TileProps) {
+  const isWideScreen = useMediaQuery({ minWidth: 512});
+  const containerWidth = isWideScreen ? containerWidthDesktop : containerWidthMobile;
   const [scale, setScale] = useState(1);
   const previousValue = usePreviousProps(value);
   const hasChanged = previousValue !== value;
@@ -37,8 +41,8 @@ export default function Tile({ position, value }: TileProps) {
   };
 
   return (
-    <div className={styles.tile} style={style}>
+      <div className={`${styles.tile} ${styles[`tile${value}`]}`} style={style}>
       {value}
     </div>
-  ); // style={{ left: positionToPixels(position[0]), top: positionToPixels(position[1]) }
+    )
 }
